@@ -1,5 +1,8 @@
 # Présentation
 
+
+
+
 "Mr Matt" est un jeu de réflexion très simple : vous êtes M. Matt, creusant dans une grotte, mangeant des pommes (carottes, hamburgers, citrouilles) et évitant les chutes de pierres. Pas de tir, pas de meurtre - juste penser à l'avance et des heures de frustration sans fin...
 
 ![Exemple du premier niveau](images/1/jeu.png)
@@ -20,6 +23,8 @@ Le jeu se comporte de 5 éléments affichables en plus du joueur :
 - les rochers, soumis à la gravité ;
 - les cases vides, traversables par le joueur et les rochers ;
 - les murs, infranchissables.
+
+\pagebreak
 
 ## Comportement des objets
 
@@ -229,7 +234,22 @@ Vous devrez alors réaliser :
 
 ### Tests unitaires, `git` et Javadoc
 
+- Il vous est demandé de bien *commenter* et de bien réaliser la documentation (au format Javadoc) de vos fichiers.
+- Pensez à commiter & pusher votre travail ***de façon régulière***.
+- Les messages de vos commits sont essentiels (pas de "lol ça marche", "ENFIN!!!!", "toto", ou autres). Soyez clairs (vous pouvez vous inspirer de [cette norme](https://buzut.net/cours/versioning-avec-git/bien-nommer-ses-commits).
+- N'oubliez pas de réaliser des tests unitaires afin de valider votre code au fur et à mesure de votre production. Essayez d'en réaliser au moins un sur quatre des fonctions demandées.
 
+### Structure du rendu
+
+1. Il vous est demandé un rendu *propre*, c'est à dire qui **compile** à minima.
+2. Si votre projet **ne compile pas**, la note est automatiquement plafonnée à 10.
+3. Votre projet comportera à la racine un fichier `AUTHORS` qui comporte votre adresse 3il (du genre `philr@3il.fr`).
+4. Ce projet est à faire ***individuellement***. Toutefois, je n'ai rien contre l'entraide entre vous (tant que cela ne se résume pas à "pomper le code du voisin"). Si vous avez été aidé par quelqu'un, réalisez un fichier `HELPERS` à la racine de votre projet où vous indiquez celui qui vous a aidé, et de quelle façon (cela constituera un bonus pour cette personne lors de la notation).
+5. Enfin, vous réaliserez un fichier `README.md` à la racine du projet dans lequel vous indiquerez, sous réserve de pertinence :
+    - ce que vous avez réalisé du projet ;
+    - les réponses aux diverses questions du sujet s'il y en a ;
+    - un retour personnel sur les points qui vous ont paru difficiles ;
+    - tout autre commentaire que vous jugerez utile...
 
 # Plan d'attaque pas à pas
 
@@ -247,6 +267,8 @@ Pour réaliser cette classe, vous devrez coder les attributs et méthodes suivan
 - `public boolean estPoussable()` qui renvoie si l'objet est poussable (c'est à dire que le joueur peut le pousser *horizontalement* en se déplaçant dans sa direction).
 - `public boolean estGlissant()` qui renvoie si l'objet est glissant (c'est à dire qu'un rocher tombant dessus glissera à gauche ou à droite pour tomber).
 - enfin, vous ferez une fonction un peu particulière, `public void visiterPlateauCalculEtatSuivant(Niveau niveau, int x, int y)`, qui implémente le patron Visiteur pour calculer l'état suivant du niveau en cours.
+
+*Question : pourquoi cette classe est-elle abstraite ?*
 
 ### Autres objets
 
@@ -277,6 +299,8 @@ La classe la plus complète, `Niveau`, **devra impérativement comporter** trois
 Cette classe est conséquente, et constitue le "gros" de votre travail.
 
 La première méthode à réaliser est la méthode `private void echanger(int sourceX, int sourceY, int destinationX, int destinationY)`. Cette méthode vous sera *très* utile, et échangera l'objet en position (sourceX, sourceY) avec celui en position (destinationX, destinationY).
+
+*Question : pourquoi cette méthode est-elle privée ?*
 
 La classe `Niveau` comprend un constructeur `public Niveau(String nomDeFichier)` qui prend en paramètre le nom d'un fichier, et charge le contenu de ce fichier dans le tableau de représentation.
 
@@ -311,6 +335,8 @@ La méthode `jouer` renvoie `true` si le plateau de jeu a subi une modification 
 Un petit indice pour coder `deplacementPossible` : si le joueur essaie de sortir du plateau (sa position future est négative ou hors limites du tableau), le déplacement est impossible. Sinon, le déplacement est possible si et seulement si la position d'arrivée contient un objet qui `estMarchable`.
 
 Pour `deplacer`, gagnez du temps : vous avez vérifié dans la fonction `deplacementPossible` les conditions de déplacement. Comment peut-on procéder au déplacement ? Il vous "suffit" d'échanger le joueur et l'objet de destination, puis de remplacer ce dernier par une case vide. N'oubliez pas de mettre les coordonnées du joueur à jour !
+
+*Question : pourquoi ces deux méthodes sont-elles privées ?*
 
 ## Le plus difficile : calcul de l'état suivant
 
@@ -363,7 +389,7 @@ for (int x = plateau.length - 1; x >= 0; x--) {
 }
 ~~~~~
 
-**Question : quel est le problème d'une telle implémentation, d'après le cours ?**
+*Question : quel est le problème d'une telle implémentation, d'après le cours ?*
 
 ### Solution correcte : le patron Visiteur
 
@@ -420,7 +446,11 @@ Voici le comportement à appliquer, en fonction des règles de la première part
 
 ### Le cas des `Pomme`s
 
-Appliquez ensuite le patron Visiteur aux `Pomme`s pour pouvoir les compter.
+Appliquez ensuite le patron Visiteur aux `Pomme`s pour pouvoir les compter. Pensez à surcharger le visiteur de `Niveau`.
+
+### Question finale
+
+*Question : pourquoi la méthode etatSuivant() est-elle publique ?*
 
 ## Peaufinage et dernières fonctions
 
@@ -464,3 +494,4 @@ Dans la méthode `jouer`, gérez le cas où le joueur veut quitter. C'est assez 
 
 Pour gérer l'annulation, c'est un peu plus compliqué. Vous devez, avant d'effectuer un mouvement, garder en mémoire une copie de l'état actuel du niveau. La fonction `Utils.cloneTableau` vous sera utile pour cela. Dès que le joueur souhaite annuler, il "suffit" de charger la copie de sauvegarde dans l'état actuel du niveau.
 
+PDF : [Une version PDF du sujet est disponible ici](https://philippe.roussille.io/documents/miniprojet1.pdf)
