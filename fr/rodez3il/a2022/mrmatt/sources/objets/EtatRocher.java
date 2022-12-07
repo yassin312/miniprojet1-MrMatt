@@ -6,5 +6,7 @@ package fr.rodez3il.a2022.mrmatt.sources.objets;
  *
  */
 public enum EtatRocher {
-  // À FAIRE
+   // Etat du rocher
+  CHUTE, // le rocher est en train de tomber  
+  FIXE; // le rocher est sur un sol
 }

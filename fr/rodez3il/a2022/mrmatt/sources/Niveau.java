@@ -1,5 +1,14 @@
 package fr.rodez3il.a2022.mrmatt.sources;
 
+import fr.rodez3il.a2022.mrmatt.sources.objets.ObjetPlateau;
+import fr.rodez3il.a2022.mrmatt.sources.objets.Herbe;
+import fr.rodez3il.a2022.mrmatt.sources.objets.Pomme;
+import fr.rodez3il.a2022.mrmatt.sources.objets.Vide;
+import fr.rodez3il.a2022.mrmatt.sources.objets.Mur;
+import fr.rodez3il.a2022.mrmatt.sources.objets.Rocher;
+import fr.rodez3il.a2022.mrmatt.sources.objets.EtatRocher;
+
+
 import java.awt.geom.Ellipse2D;
 
 public class Niveau {
@@ -11,7 +20,9 @@ public class Niveau {
   private int joueurY;
 
   // Autres attributs que vous jugerez nécessaires...
-
+  private int nombreLigne;
+  private int nombreColonne;
+  private int nombrePomme;
   /**
    * Constructeur public : crée un niveau depuis un fichier.
    * 
@@ -19,9 +30,31 @@ public class Niveau {
    * @author .............
    */
   public Niveau(String chemin) {
-    this();
     chargerNiveau(chemin);
-    Utils.lireFichier(chemin);
+    this.plateau = new ObjetPlateau[0][0];
+    this.nombrePomme = 0;
+  }
+
+  private void chargerNiveau(String chemin){
+
+    String[] fichier = Utils.lireFichier(chemin).split("\n");
+    this.nombreColonne = Integer.parseInt(fichier[0]);
+    this.nombreLigne = Integer.parseInt(fichier[1]);
+
+    this.plateau = new ObjetPlateau[this.nombreLigne][this.nombreColonne];
+
+    for (int i = 2; i < this.nombreColonne + 2;  i++){
+      for (int j = 0; j < this.nombreColonne; j++){
+        plateau[i-2][j] = ObjetPlateau.depuisCaractere(fichier[i].charAt(j));
+        if (fichier[i].charAt(j) == 'H'){
+          joueurX = i-2;
+          joueurY = j;
+        }
+        if (fichier[i].charAt(j) == '+'){
+          nombrePomme++;
+        }
+      }
+    }
   }
 
   /**
@@ -42,7 +75,14 @@ public class Niveau {
    * ................
    */
   public void afficher() {
-    // TODO
+    
+    for (int x = 0; x < this.plateau.length; x++){
+      for(int j = 0; j < this.plateau[x].length; j++){
+        System.out.println(this.plateau[x][j].afficher());
+      }
+      System.out.println();
+    }
+    System.out.println("Pommes restantes : " + this.nombrePomme);
 
   }
 
@@ -50,9 +90,32 @@ public class Niveau {
   public void etatSuivantVisiteur(Rocher r, int x, int y) {
 
     // Verifier si le rocher et fixe et n'a rien en dessous de lui
-    if (r.EtatRocher() == FIXE && this.plateau[x][y + 1].estVide()) {
-
+    if (r.getEtat() == EtatRocher.FIXE && this.plateau[x][y + 1].estVide()) {
+      // Passe l'objet Rocher en etat de chute
+      r.setEtat(EtatRocher.CHUTE);
     }
+      // Si le rocher est en etat de chute
+    else if (r.getEtat() == EtatRocher.CHUTE){
+      // Si le joueur se trouve en dessus d'un rocher qui chute
+      if (x == joueurX && y + 1 == joueurY){
+        System.out.println("Défaite");
+      }
+        // Si le rocher chute sur un autre rocher
+      else if (plateau[x][y+1].estGlissant()){
+        // Il se place à gauche si c'est possible
+        if (plateau[x-1][y].estVide() && plateau[x-1][y+1].estVide()){
+          echanger(x, y, x-1, y+1);
+          r.setEtat(EtatRocher.FIXE);
+        }
+          //Sinon il se place à droite
+          else{
+            echanger(x, y, x+1, y+1);
+            r.setEtat(EtatRocher.FIXE);
+          }
+      }
+    }
+    else 
+      r.setEtat(EtatRocher.FIXE);   
   }
 
   /**
@@ -64,16 +127,9 @@ public class Niveau {
   public void etatSuivant() {
     for (int i = plateau.length; i >= 0; i--) {
 
-      for (int j = plateau[i].legnth; j >= 0; j--) {
-
+      for (int j = plateau[i].length; j >= 0; j--) {
       }
-
     }
-  }
-
-  // Illustrez les Javadocs manquantes lorsque vous coderez ces méthodes !
-
-  public boolean enCours() {
   }
 
   // Joue la commande C passée en paramètres
@@ -81,19 +137,7 @@ public class Niveau {
    * return true si le plateau subi un changement
    */
   public boolean jouer(Commande c) {
-    // int x, y;
 
-    // if (x + 1) {
-    // return true;
-    // } else if (x - 1) {
-    // return true;
-    // } else if (y + 1) {
-    // return true;
-    // } else if (y - 1)
-    // return true;
-    // else
-    // return false;
-    // }
     switch (c) {
       case HAUT:
         deplacer(this.joueurX, joueurY - 1);
@@ -144,11 +188,22 @@ public class Niveau {
    * Affiche l'état final (gagné ou perdu) une fois le jeu terminé.
    */
   public void afficherEtatFinal() {
+    if(this.nombrePomme == 0)
+      System.out.println("Vous avez gagné !");
+    else
+      System.out.println("Vous avez perdu...");
   }
 
+  // Illustrez les Javadocs manquantes lorsque vous coderez ces méthodes !
+  
+  public boolean enCours() {
+    return true && nombrePomme !=0;
+  }
+  
   /**
    */
   public boolean estIntermediaire() {
   }
 
 }
+

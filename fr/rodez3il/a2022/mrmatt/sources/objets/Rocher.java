@@ -1,24 +1,22 @@
 package fr.rodez3il.a2022.mrmatt.sources.objets;
 
+import fr.rodez3il.a2022.mrmatt.sources.*;
+
+
 public class Rocher extends ObjetPlateau {
+  
   private EtatRocher etat;
 
-  public enum EtatRocher {
-    // Etat du rocher
-    CHUTE, // le rocher est en train de tomber
-    FIXE; // le rocher est sur un sol
-  }
-
-  public getEtat(){
+  public EtatRocher getEtat(){
     return etat;
   }
 
-  public setEtat(){
-    this.etat
+  public void setEtat(EtatRocher etat){
+    this.etat = etat;
   }
 
   public char afficher() {
-    return "*";
+    return '*';
   }
 
   public boolean estMarchable() {
@@ -33,7 +31,6 @@ public class Rocher extends ObjetPlateau {
     return true;
   }
 
-  @Override
   public void visiterPlateauCalculEtatSuivant(Niveau plateau, int x, int y) {
     plateau.etatSuivantVisiteur(this, x, y);
   }
