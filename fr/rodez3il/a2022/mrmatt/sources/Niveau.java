@@ -49,6 +49,10 @@ public class Niveau {
   // TODO : patron visiteur du Rocher...
   public void etatSuivantVisiteur(Rocher r, int x, int y) {
 
+    // Verifier si le rocher et fixe et n'a rien en dessous de lui
+    if (r.EtatRocher() == FIXE && this.plateau[x][y + 1].estVide()) {
+
+    }
   }
 
   /**
@@ -58,7 +62,13 @@ public class Niveau {
    * @author
    */
   public void etatSuivant() {
-    // TODO
+    for (int i = plateau.length; i >= 0; i--) {
+
+      for (int j = plateau[i].legnth; j >= 0; j--) {
+
+      }
+
+    }
   }
 
   // Illustrez les Javadocs manquantes lorsque vous coderez ces méthodes !
@@ -71,46 +81,46 @@ public class Niveau {
    * return true si le plateau subi un changement
    */
   public boolean jouer(Commande c) {
-  //   int x, y;
+    // int x, y;
 
-  //   if (x + 1) {
-  //     return true;
-  //   } else if (x - 1) {
-  //     return true;
-  //   } else if (y + 1) {
-  //     return true;
-  //   } else if (y - 1)
-  //     return true;
-  //   else
-  //     return false;
-  // }
-    switch (c){
+    // if (x + 1) {
+    // return true;
+    // } else if (x - 1) {
+    // return true;
+    // } else if (y + 1) {
+    // return true;
+    // } else if (y - 1)
+    // return true;
+    // else
+    // return false;
+    // }
+    switch (c) {
       case HAUT:
-        deplacer(this.joueurX,joueurY-1);
+        deplacer(this.joueurX, joueurY - 1);
         break;
       case GAUCHE:
-        deplacer(this.joueurX-1,joueurY);
+        deplacer(this.joueurX - 1, joueurY);
         break;
       case BAS:
-        deplacer(this.joueurX,joueurY+1);
+        deplacer(this.joueurX, joueurY + 1);
         break;
       case DROITE:
-        deplacer(this.joueurX+1,joueurY);
+        deplacer(this.joueurX + 1, joueurY);
         break;
-      
+
     }
     return true;
   }
 
-  private boolean deplacementPossible(int dx, int dy){
+  private boolean deplacementPossible(int dx, int dy) {
     int toggleX = this.joueurX + dx;
     int toggleY = this.joueurY + dy;
-    
+
     if (plateau[toggleX][toggleY].estMarchable())
       return true;
-    
+
     return false;
-    
+
   }
 
   /**
@@ -118,16 +128,16 @@ public class Niveau {
    */
 
   public void deplacer(int deltaX, int deltaY) {
-    
-    if (deplacementPossible(deltaX, deltaY) == true){    
+    // Si le déplacement est possible
+    if (deplacementPossible(deltaX, deltaY) == true) {
+      // Déplace le joueur à la destination choisit
       echanger(this.joueurX, this.joueurY, deltaX, deltaY);
       // int toggleX = this.joueurX + deltaX;
       // int toggleY = this.joueurY + deltaY;
       this.joueurX = deltaX;
       this.joueurY = deltaY;
-    }
-    else
-      System.out.println("Déplacement impossible");   
+    } else
+      System.out.println("Déplacement impossible");
   }
 
   /**

@@ -5,8 +5,7 @@ public class Herbe extends ObjetPlateau{
   public char afficher(){
     return "-";
   }
-  @Override
-  public estMarchable(){
+  public boolean estMarchable(){
     return true;
   }
   

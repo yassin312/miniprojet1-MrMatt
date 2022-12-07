@@ -6,12 +6,12 @@ public class Vide extends ObjetPlateau {
     return " ";
   }
 
-  @Override
-  public estMarchable(){
+
+  public boolean estMarchable(){
     return false;
   }
 
-  // @Override
+  
   public boolean estVide(){
     return true;
   }
