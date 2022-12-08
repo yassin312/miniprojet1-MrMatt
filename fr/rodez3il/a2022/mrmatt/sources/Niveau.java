@@ -80,7 +80,7 @@ public class Niveau {
 
     for (int i = 0; i < this.plateau.length; ++i) {
       for (int j = 0; j < this.plateau[i].length; ++j) {
-        System.out.println(this.plateau[i][j].afficher());
+        System.out.print(this.plateau[i][j].afficher());
       }
       System.out.println();
     }
@@ -131,13 +131,13 @@ public class Niveau {
    * @author
    */
   public void etatSuivant() {
-    
-    for (int i = plateau.length; i >= 0; i--) {
-
-      for (int j = plateau[i].length; j >= 0; j--) {
-        
+    if (etatIntermediaire() == false){  
+      for (int i = plateau.length; i >= 0; i--) {
+        for (int j = plateau[i].length; j >= 0; j--) {
+          
+        }
       }
-    }
+    }   
   }
 
   // Joue la commande C passée en paramètres
