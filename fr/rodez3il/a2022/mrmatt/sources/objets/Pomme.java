@@ -1,4 +1,5 @@
 package fr.rodez3il.a2022.mrmatt.sources.objets;
+import fr.rodez3il.a2022.mrmatt.sources.*;
 
 public class Pomme extends ObjetPlateau{
 
@@ -10,7 +11,5 @@ public class Pomme extends ObjetPlateau{
     return true;
   }
 
-  public void visiterPlateauCalculEtatSuivant(Niveau plateau, int x, int y) {
-    plateau.etatSuivantVisiteur(this, x, y);
-  }
+
 }
