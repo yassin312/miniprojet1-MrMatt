@@ -95,31 +95,39 @@ public class Niveau {
   public void etatSuivantVisiteur(Rocher r, int x, int y) {
 
     // Verifier si le rocher et fixe et n'a rien en dessous de lui
-    if (r.getEtat() == EtatRocher.FIXE && this.plateau[x][y + 1].estVide()) {
-      // Passe l'objet Rocher en etat de chute
-      r.setEtat(EtatRocher.CHUTE);
-    }
-    // Si le rocher est en etat de chute
-    else if (r.getEtat() == EtatRocher.CHUTE) {
-      // Si le joueur se trouve en dessus d'un rocher qui chute
-      if (x == joueurX && y + 1 == joueurY) {
-        System.out.println("Défaite");
-        
+    if (r.getEtat() == EtatRocher.FIXE && x+1<nombreLigne) {
+      if(plateau[x+1][y].estVide()){
+        // Passe l'objet Rocher en etat de chute      
+        r.setEtat(EtatRocher.CHUTE);
       }
+     
+    }
+      else if (plateau[x+1][y].estVide()){
+        echanger(x, y, x+1, y);
+      }
+    // Si le rocher est en etat de chute
+    else if (r.getEtat() == EtatRocher.CHUTE && x+1<nombreLigne) {
+      // Si le joueur se trouve en dessus d'un rocher qui chute la partie s'arrête
+      if (x+1 == joueurX && y == joueurY) {
+        r.setEtat(EtatRocher.FIXE);
+        partie = false;
+      }
+    }
       // Si le rocher chute sur un autre rocher
-      else if (plateau[x][y + 1].estGlissant()) {
+      else if (plateau[x+1][y].estGlissant()) {
         // Il se place à gauche si c'est possible
-        if (plateau[x - 1][y].estVide() && plateau[x - 1][y + 1].estVide()) {
-          echanger(x, y, x - 1, y + 1);
+        if (plateau[x][y-1].estVide() && plateau[x + 1][y - 1].estVide()) {
+          echanger(x, y, x + 1, y - 1);
           r.setEtat(EtatRocher.FIXE);
         }
         // Sinon il se place à droite
         else {
           echanger(x, y, x + 1, y + 1);
+          plateau[x][y] = new Vide();
           r.setEtat(EtatRocher.FIXE);
         }
       }
-    } else {
+     else {
       r.setEtat(EtatRocher.FIXE);
     }
     if (r.getEtat() == EtatRocher.CHUTE) {
@@ -135,11 +143,15 @@ public class Niveau {
    * @author
    */
   public void etatSuivant() {
+    chuteRocher = false;
+    System.out.println(plateau.length);
     for (int i = plateau.length - 1; i >= 0; i--) {
       for (int j = plateau[i].length - 1; j >= 0; j--) {
         plateau[i][j].visiterPlateauCalculEtatSuivant(this, i, j);
       }
-    }  
+    }
+    if(nbPomme == 0)
+      partie = false;
   }
 
   // Joue la commande C passée en paramètres
@@ -177,10 +189,6 @@ public class Niveau {
         return true;
     }
     return false;
-    // if (plateau[dx][dy].estMarchable())
-    //   return true;
-    // else
-    //   return false;
   }
 
   /**
@@ -188,6 +196,8 @@ public class Niveau {
    */
 
   public void deplacer(int deltaX, int deltaY) {
+    if(plateau[deltaX][deltaY].estPomme() == true)
+      nbPomme--;
       // Déplace le joueur à la destination choisit
     echanger(this.joueurX, this.joueurY, deltaX, deltaY);
     plateau[this.joueurX][this.joueurY] = new Vide();

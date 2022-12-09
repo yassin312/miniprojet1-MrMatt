@@ -51,8 +51,7 @@ public abstract class ObjetPlateau {
   public boolean estGlissant(){
     return false;
   }
-
-  public boolean estUnePomme(){
+  public boolean estPomme(){
     return false;
   }
   public void visiterPlateauCalculEtatSuivant(Niveau niveau, int x, int y) {

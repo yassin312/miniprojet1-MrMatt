@@ -11,7 +11,7 @@ public class Pomme extends ObjetPlateau{
     return true;
   }
 
-  public boolean estUnePomme(){
+  public boolean estPomme(){
     return true;
   }
 
