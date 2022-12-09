@@ -21,7 +21,7 @@ public class Niveau {
   // Autres attributs que vous jugerez nécessaires...
   private int nombreLigne;
   private int nombreColonne;
-  private int nombrePomme;
+  private int nbPomme;
   private boolean chuteRocher;
 
   /**
@@ -36,7 +36,7 @@ public class Niveau {
   }
 
   private void chargerNiveau(String chemin) {
-    this.nombrePomme = 0;
+    this.nbPomme = 0;
     String[] fichier = Utils.lireFichier(chemin).split("\n");
     this.nombreColonne = Integer.parseInt(fichier[0]);
     this.nombreLigne = Integer.parseInt(fichier[1]);
@@ -51,7 +51,7 @@ public class Niveau {
           joueurY = j;
         }
         if (fichier[i].charAt(j) == '+') {
-          nombrePomme++;
+          nbPomme++;
         }
       }
     }
@@ -75,7 +75,6 @@ public class Niveau {
    * ................
    */
 
-  // Reste à corriger le bug de retour à la ligne, peut etre dans le chargerNiveau
   public void afficher() {
 
     for (int i = 0; i < this.plateau.length; ++i) {
@@ -84,7 +83,7 @@ public class Niveau {
       }
       System.out.println();
     }
-    System.out.println("Pommes restantes : " + this.nombrePomme);
+    System.out.println("Pommes restantes : " + this.nbPomme);
   }
 
   // TODO : patron visiteur du Rocher...
@@ -114,30 +113,30 @@ public class Niveau {
           r.setEtat(EtatRocher.FIXE);
         }
       }
-    } else{
+    } else {
       r.setEtat(EtatRocher.FIXE);
     }
-    if (r.getEtat() == EtatRocher.CHUTE){
+    if (r.getEtat() == EtatRocher.CHUTE) {
       this.chuteRocher = true;
-    }
-    else
+    } else
       this.chuteRocher = false;
   }
 
   /**
    * Calcule l'état suivant du niveau.
-   * ........
+   * 
    * 
    * @author
    */
   public void etatSuivant() {
-    if (etatIntermediaire() == false){  
-      for (int i = plateau.length; i >= 0; i--) {
-        for (int j = plateau[i].length; j >= 0; j--) {
-          
+    // Si auncun rocher ne chute
+    if (chuteRocher == false) {
+      for (int i = plateau.length - 1; i >= 0; i--) {
+        for (int j = plateau[i].length - 1; j >= 0; j--) {
+          plateau[i][j].visiterPlateauCalculEtatSuivant(this, i, j);
         }
       }
-    }   
+    }
   }
 
   // Joue la commande C passée en paramètres
@@ -181,12 +180,12 @@ public class Niveau {
 
   public void deplacer(int deltaX, int deltaY) {
     // Si le déplacement est possible
-    if (plateau[deltaX][deltaY].estMarchable()){
+    if (plateau[deltaX][deltaY].estMarchable()) {
       // Déplace le joueur à la destination choisit
       echanger(this.joueurX, this.joueurY, deltaX, deltaY);
       this.plateau[this.joueurX][this.joueurY] = new Vide();
     } else
-        System.out.println("Déplacement impossible");
+      System.out.println("Déplacement impossible");
     this.joueurX = deltaX;
     this.joueurY = deltaY;
   }
@@ -195,7 +194,7 @@ public class Niveau {
    * Affiche l'état final (gagné ou perdu) une fois le jeu terminé.
    */
   public void afficherEtatFinal() {
-    if (this.nombrePomme == 0)
+    if (this.nbPomme == 0)
       System.out.println("Vous avez gagné !");
     else
       System.out.println("Vous avez perdu...");
@@ -205,16 +204,16 @@ public class Niveau {
 
   public boolean enCours() {
     // S'il reste des pommes sur le plateau, la partie est encore en cours
-    if (nombrePomme != 0)
+    if (nbPomme != 0)
       return true;
     else
       return false;
-    // return true && nombrePomme !=0;
   }
 
   /**
+   * 
    */
   public boolean estIntermediaire() {
-     return chuteRocher;
+    return chuteRocher;
   }
 }
