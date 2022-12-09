@@ -52,6 +52,9 @@ public abstract class ObjetPlateau {
     return false;
   }
 
+  public boolean estUnePomme(){
+    return false;
+  }
   public void visiterPlateauCalculEtatSuivant(Niveau niveau, int x, int y) {
     
   }

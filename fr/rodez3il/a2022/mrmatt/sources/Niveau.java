@@ -22,7 +22,9 @@ public class Niveau {
   private int nombreLigne;
   private int nombreColonne;
   private int nbPomme;
-  private boolean chuteRocher;
+  private boolean chuteRocher = false;
+  private int nbDeplacement;
+  private boolean partie = true;
 
   /**
    * Constructeur public : crée un niveau depuis un fichier.
@@ -31,18 +33,18 @@ public class Niveau {
    * @author .............
    */
   public Niveau(String chemin) {
-    chargerNiveau(chemin);
+    // chargerNiveau(chemin);
     // this.plateau = new ObjetPlateau[0][0];
-  }
-
-  private void chargerNiveau(String chemin) {
-    this.nbPomme = 0;
+    nbPomme = 0;
     String[] fichier = Utils.lireFichier(chemin).split("\n");
+
+    // Récupère le nombre de colonne et le nombre de ligne sous le format INTEGER
     this.nombreColonne = Integer.parseInt(fichier[0]);
     this.nombreLigne = Integer.parseInt(fichier[1]);
 
     this.plateau = new ObjetPlateau[this.nombreLigne][this.nombreColonne];
 
+    // Permet d'afficher le plateau
     for (int i = 2; i < this.nombreLigne + 2; i++) {
       for (int j = 0; j < this.nombreColonne; j++) {
         plateau[i - 2][j] = ObjetPlateau.depuisCaractere(fichier[i].charAt(j));
@@ -57,6 +59,8 @@ public class Niveau {
     }
   }
 
+ 
+
   /**
    * Javadoc à réaliser...
    * 
@@ -64,10 +68,9 @@ public class Niveau {
    * @author
    */
   private void echanger(int sourceX, int sourceY, int destinationX, int destinationY) {
-    // Ajout d'un objet vide à l'emplacement de base du joueur
-    plateau[this.joueurX][this.joueurY] = new Vide();
-    joueurX = destinationX;
-    joueurY = destinationY;
+    ObjetPlateau tempo = this.plateau[destinationX][destinationY];
+    this.plateau[destinationX][destinationY] = this.plateau[sourceX][sourceY];
+    this.plateau[sourceX][sourceY] = tempo;
   }
 
   /**
@@ -77,13 +80,15 @@ public class Niveau {
 
   public void afficher() {
 
-    for (int i = 0; i < this.plateau.length; ++i) {
-      for (int j = 0; j < this.plateau[i].length; ++j) {
-        System.out.print(this.plateau[i][j].afficher());
+    for (int i = 0; i < plateau.length; ++i) {
+      for (int j = 0; j < plateau[i].length; ++j) {
+        System.out.print(this.plateau[i][j].afficher());      
       }
       System.out.println();
     }
     System.out.println("Pommes restantes : " + this.nbPomme);
+    System.out.println("Nombre déplacements : " + this.nbDeplacement);
+    
   }
 
   // TODO : patron visiteur du Rocher...
@@ -99,6 +104,7 @@ public class Niveau {
       // Si le joueur se trouve en dessus d'un rocher qui chute
       if (x == joueurX && y + 1 == joueurY) {
         System.out.println("Défaite");
+        
       }
       // Si le rocher chute sur un autre rocher
       else if (plateau[x][y + 1].estGlissant()) {
@@ -129,14 +135,11 @@ public class Niveau {
    * @author
    */
   public void etatSuivant() {
-    // Si auncun rocher ne chute
-    if (chuteRocher == false) {
-      for (int i = plateau.length - 1; i >= 0; i--) {
-        for (int j = plateau[i].length - 1; j >= 0; j--) {
-          plateau[i][j].visiterPlateauCalculEtatSuivant(this, i, j);
-        }
+    for (int i = plateau.length - 1; i >= 0; i--) {
+      for (int j = plateau[i].length - 1; j >= 0; j--) {
+        plateau[i][j].visiterPlateauCalculEtatSuivant(this, i, j);
       }
-    }
+    }  
   }
 
   // Joue la commande C passée en paramètres
@@ -144,34 +147,40 @@ public class Niveau {
    * return true si le plateau subi un changement
    */
   public boolean jouer(Commande c) {
-
+    int deltaX = joueurX;
+    int deltaY = joueurY;
     switch (c) {
       case HAUT:
-        deplacer(this.joueurX, joueurY - 1);
+        deltaX--;
         break;
       case GAUCHE:
-        deplacer(this.joueurX - 1, joueurY);
+        deltaY--;
         break;
       case BAS:
-        deplacer(this.joueurX, joueurY + 1);
+        deltaX++;
         break;
       case DROITE:
-        deplacer(this.joueurX + 1, joueurY);
+        deltaY++;
         break;
-
     }
-    return true;
+    if (deplacementPossible(deltaX,deltaY)) {
+      deplacer(deltaX, deltaY);
+      return true;
+    }
+    return false;
   }
 
   private boolean deplacementPossible(int dx, int dy) {
-    int toggleX = this.joueurX + dx;
-    int toggleY = this.joueurY + dy;
 
-    if (plateau[toggleX][toggleY].estMarchable())
-      return true;
-
+    if (0 <= dx && 0 <= dy){
+      if(plateau[dx][dy].estMarchable())
+        return true;
+    }
     return false;
-
+    // if (plateau[dx][dy].estMarchable())
+    //   return true;
+    // else
+    //   return false;
   }
 
   /**
@@ -179,13 +188,10 @@ public class Niveau {
    */
 
   public void deplacer(int deltaX, int deltaY) {
-    // Si le déplacement est possible
-    if (plateau[deltaX][deltaY].estMarchable()) {
       // Déplace le joueur à la destination choisit
-      echanger(this.joueurX, this.joueurY, deltaX, deltaY);
-      this.plateau[this.joueurX][this.joueurY] = new Vide();
-    } else
-      System.out.println("Déplacement impossible");
+    echanger(this.joueurX, this.joueurY, deltaX, deltaY);
+    plateau[this.joueurX][this.joueurY] = new Vide();
+    nbDeplacement++;
     this.joueurX = deltaX;
     this.joueurY = deltaY;
   }
@@ -203,11 +209,8 @@ public class Niveau {
   // Illustrez les Javadocs manquantes lorsque vous coderez ces méthodes !
 
   public boolean enCours() {
-    // S'il reste des pommes sur le plateau, la partie est encore en cours
-    if (nbPomme != 0)
-      return true;
-    else
-      return false;
+
+    return partie && nbPomme > 0;
   }
 
   /**

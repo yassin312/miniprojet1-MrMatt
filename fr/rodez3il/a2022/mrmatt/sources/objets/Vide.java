@@ -8,7 +8,7 @@ public class Vide extends ObjetPlateau {
 
 
   public boolean estMarchable(){
-    return false;
+    return true;
   }
 
   
